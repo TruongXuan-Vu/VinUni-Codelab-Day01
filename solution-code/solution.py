@@ -13,6 +13,10 @@ import os
 import time
 from typing import Any, Callable
 
+from dotenv import load_dotenv
+
+load_dotenv()  # Tự động nạp API keys từ file .env (nếu tồn tại)
+
 # ---------------------------------------------------------------------------
 # Estimated costs per 1M INPUT & OUTPUT tokens (USD) as of March 2026
 # Vietnamese text generally consumes ~1.5x - 2.0x more tokens than English due to Unicode/diacritics.
@@ -21,6 +25,7 @@ PRICING_1M_TOKENS = {
     "gpt-4o": {"input": 5.00, "output": 20.00},
     "gpt-4o-mini": {"input": 0.150, "output": 0.600},
     "gemini-2.5-flash": {"input": 0.075, "output": 0.300},
+    "gemini-3.5-flash-lite": {"input": 0.30, "output": 2.50},
     "gemini-2.5-pro": {"input": 1.25, "output": 5.00},
     "claude-3-5-sonnet": {"input": 3.00, "output": 15.00},
     "claude-3-5-haiku": {"input": 0.80, "output": 4.00},
@@ -29,7 +34,7 @@ PRICING_1M_TOKENS = {
 # Standard Model Identifiers
 OPENAI_MODEL = "gpt-4o"
 OPENAI_MINI_MODEL = "gpt-4o-mini"
-GEMINI_MODEL = "gemini-2.5-flash"
+GEMINI_MODEL = "gemini-3.5-flash-lite"
 ANTHROPIC_MODEL = "claude-3-5-haiku"
 
 
@@ -240,7 +245,7 @@ def compare_models(prompt: str) -> dict:
     text_4o, latency_4o, usage_4o = call_openai(prompt, model=OPENAI_MODEL)
     # GPT-4o Mini
     text_mini, latency_mini, usage_mini = call_openai(prompt, model=OPENAI_MINI_MODEL)
-    # Gemini 2.5 Flash
+    # Gemini 3.5 Flash Lite
     text_gemini, latency_gemini, usage_gemini = call_gemini(prompt, model=GEMINI_MODEL)
 
     return {
@@ -261,7 +266,7 @@ def compare_models(prompt: str) -> dict:
         "gemini_flash": {
             "response": text_gemini,
             "latency": latency_gemini,
-            "cost": _calc_cost("gemini-2.5-flash", usage_gemini),
+            "cost": _calc_cost("gemini-3.5-flash-lite", usage_gemini),
             "input_tokens": usage_gemini["input_tokens"],
             "output_tokens": usage_gemini["output_tokens"],
         },
